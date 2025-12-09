@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>相机基础设置交互学习</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #f0f8ff;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #00e5ff;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 3px 8px rgba(0, 229, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .subtitle {
+            color: #b0e0e6;
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 15px;
+        }
+        
+        .modules-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .module-card {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 18px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(0, 229, 255, 0.3);
+        }
+        
+        .module-card.active {
+            border-color: #00e5ff;
+            box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 229, 255, 0.3);
+        }
+        
+        .module-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00e5ff, #00b8d4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 20px;
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.3);
+        }
+        
+        .module-title {
+            font-size: 1.6rem;
+            color: #00e5ff;
+            font-weight: 600;
+        }
+        
+        .module-description {
+            color: #c0e8f0;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+        
+        .simulator-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .camera-interface {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .camera-display {
+            width: 100%;
+            height: 280px;
+            background: #0a1a1f;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            color: #7fffd4;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+            border: 2px solid #1e3a3a;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .display-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+        
+        .display-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .display-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(127, 255, 212, 0.2);
+        }
+        
+        .display-label {
+            color: #7fffd4;
+            font-weight: bold;
+        }
+        
+        .display-value {
+            color: #ffffff;
+        }
+        
+        .histogram-container {
+            height: 120px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .histogram {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            padding: 5px;
+        }
+        
+        .histogram-bar {
+            flex: 1;
+            background: linear-gradient(to top, #00e5ff, #0099cc);
+            margin: 0 2px;
+            border-radius: 2px 2px 0 0;
+            transition: height 0.5s ease;
+        }
+        
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .control-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: #00e5ff;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0, 229, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .wb-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .wb-option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .wb-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+        
+        .wb-option.selected {
+            border-color: #00e5ff;
+            background: rgba(0, 229, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.2);
+        }
+        
+        .wb-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .format-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .format-option {
+            flex: 1;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .format-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+        
+        .format-option.selected {
+            border-color: #00e5ff;
+            background: rgba(0, 229, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.2);
+        }
+        
+        .format-title {
+            font-size: 1.3rem;
+            color: #00e5ff;
+            margin-bottom: 10px;
+        }
+        
+        .metering-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .metering-option {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .metering-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
+        
+        .metering-option.selected {
+            border-color: #00e5ff;
+            background: rgba(0, 229, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.2);
+        }
+        
+        .metering-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #00e5ff;
+        }
+        
+        .metering-title {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+        
+        .review-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .review-btn {
+            flex: 1;
+            padding: 15px;
+            background: rgba(0, 229, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .review-btn:hover {
+            background: rgba(0, 229, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 1.2rem;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .focus-indicator {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .feedback-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+        
+        .feedback-title {
+            color: #00e5ff;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feedback-content {
+            color: #c0e8f0;
+            line-height: 1.7;
+            min-height: 100px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-left: 4px solid #00e5ff;
+        }
+        
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .progress-bar {
+            flex-grow: 1;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00e5ff, #00b8d4);
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 6px;
+        }
+        
+        .progress-text {
+            min-width: 120px;
+            text-align: center;
+            color: #00e5ff;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .reset-btn {
+            padding: 15px 30px;
+            background: rgba(255, 100, 100, 0.2);
+            border: none;
+            border-radius: 10px;
+            color: #ffcccc;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .reset-btn:hover {
+            background: rgba(255, 100, 100, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 1100px) {
+            .simulator-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .modules-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .display-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-camera"></i> 相机基础设置交互学习</h1>
+            <p class="subtitle">掌握白平衡、文件格式、直方图查看和测光模式四个关键相机设置，提升您的摄影技术水平</p>
+        </header>
+        
+        <div class="modules-container">
+            <div class="module-card active" id="module1">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">1. 白平衡设置</h2>
+                        <p>根据光线条件调整色彩平衡，确保照片色彩真实自然</p>
+                    </div>
+                </div>
+                <div class="module-description">
+                    <p>白平衡是确保照片颜色准确的关键设置。不同的光源有不同的色温，白平衡功能可以校正这些颜色偏差。</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>自动白平衡(AWB)：相机自动判断最佳设置</li>
+                        <li>预设白平衡：针对特定光源环境的优化设置</li>
+                        <li>自定义白平衡：使用灰卡或白纸手动设置最准确的白平衡</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="module-card" id="module2">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-file-image"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">2. 文件格式设置</h2>
+                        <p>RAW+JPEG 或 JPEG格式选择与优劣比较</p>
+                    </div>
+                </div>
+                <div class="module-description">
+                    <p>选择合适的文件格式对后期处理和图像质量有重要影响。</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>JPEG</strong>: 文件小，兼容性好，直出可用</li>
+                        <li><strong>RAW</strong>: 保留全部图像数据，后期调整空间大</li>
+                        <li><strong>RAW+JPEG</strong>: 兼顾后期处理与即时分享需求</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="module-card" id="module3">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">3. 直方图与回放检查</h2>
+                        <p>直方图查看、焦点检查和曝光评估</p>
+                    </div>
+                </div>
+                <div class="module-description">
+                    <p>拍摄后立即检查直方图和图像细节，确保曝光准确、焦点清晰。</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>直方图</strong>: 显示图像亮度分布，判断曝光是否准确</li>
+                        <li><strong>焦点检查</strong>: 放大查看图像细节，确保焦点准确</li>
+                        <li><strong>曝光评估</strong>: 识别过曝或欠曝区域</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="module-card" id="module4">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">4. 测光模式设置</h2>
+                        <p>选择合适的测光模式以获得准确曝光</p>
+                    </div>
+                </div>
+                <div class="module-description">
+                    <p>测光模式决定相机如何测量场景亮度，从而计算出正确的曝光参数。</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>评价测光</strong>: 对整个场景进行分析，适合大多数情况</li>
+                        <li><strong>中央重点测光</strong>: 偏重画面中央区域，适合主体在中央的场景</li>
+                        <li><strong>点测光</strong>: 仅对画面极小区域测光，适合高对比度场景</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="simulator-area">
+            <div class="camera-interface">
+                <h3 class="section-title"><i class="fas fa-tv"></i> 相机显示屏模拟</h3>
+                <div class="camera-display">
+                    <div class="display-content">
+                        <div class="display-section">
+                            <div class="display-row">
+                                <span class="display-label">白平衡:</span>
+                                <span class="display-value" id="wb-display">自动</span>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">文件格式:</span>
+                                <span class="display-value" id="format-display">JPEG</span>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">测光模式:</span>
+                                <span class="display-value" id="metering-display">评价测光</span>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">曝光补偿:</span>
+                                <span class="display-value" id="ev-display">0.0</span>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">图像质量:</span>
+                                <span class="display-value" id="quality-display">标准</span>
+                            </div>
+                        </div>
+                        <div class="display-section">
+                            <div class="display-row">
+                                <span class="display-label">直方图:</span>
+                                <span class="display-value">亮度分布</span>
+                            </div>
+                            <div class="histogram-container">
+                                <div class="histogram" id="histogram">
+                                    <!-- 直方图条将通过JS生成 -->
+                                </div>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">曝光状态:</span>
+                                <span class="display-value" id="exposure-status">正常</span>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">焦点状态:</span>
+                                <span class="display-value" id="focus-status">合焦</span>
+                            </div>
+                            <div class="display-row">
+                                <span class="display-label">剩余张数:</span>
+                                <span class="display-value" id="shots-remaining">245</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="focus-indicator" id="focus-indicator"></div>
+                </div>
+                
+                <div class="image-preview" id="image-preview">
+                    <div id="preview-placeholder">图像预览区域</div>
+                    <img src="" alt="" class="preview-image" id="preview-image" style="display: none;">
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <h3 class="section-title"><i class="fas fa-sliders-h"></i> 相机控制面板</h3>
+                
+                <div class="control-section">
+                    <h4 class="section-title"><i class="fas fa-sun"></i> 白平衡设置</h4>
+                    <div class="wb-options">
+                        <div class="wb-option selected" data-wb="auto">
+                            <div class="wb-icon"><i class="fas fa-robot"></i></div>
+                            <div>自动 (AWB)</div>
+                        </div>
+                        <div class="wb-option" data-wb="sunny">
+                            <div class="wb-icon"><i class="fas fa-sun"></i></div>
+                            <div>日光</div>
+                        </div>
+                        <div class="wb-option" data-wb="cloudy">
+                            <div class="wb-icon"><i class="fas fa-cloud"></i></div>
+                            <div>阴天</div>
+                        </div>
+                        <div class="wb-option" data-wb="shade">
+                            <div class="wb-icon"><i class="fas fa-umbrella"></i></div>
+                            <div>阴影</div>
+                        </div>
+                        <div class="wb-option" data-wb="tungsten">
+                            <div class="wb-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div>钨丝灯</div>
+                        </div>
+                        <div class="wb-option" data-wb="fluorescent">
+                            <div class="wb-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div>荧光灯</div>
+                        </div>
+                        <div class="wb-option" data-wb="flash">
+                            <div class="wb-icon"><i class="fas fa-bolt"></i></div>
+                            <div>闪光灯</div>
+                        </div>
+                        <div class="wb-option" data-wb="custom">
+                            <div class="wb-icon"><i class="fas fa-user-edit"></i></div>
+                            <div>自定义</div>
+                        </div>
+                    </div>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">提示：选择与拍摄环境匹配的白平衡预设，或使用自定义白平衡获得最准确的颜色。</p>
+                </div>
+                
+                <div class="control-section">
+                    <h4 class="section-title"><i class="fas fa-file-image"></i> 文件格式设置</h4>
+                    <div class="format-options">
+                        <div class="format-option selected" data-format="jpeg">
+                            <div class="format-title">JPEG</div>
+                            <p>文件小，兼容性好</p>
+                            <p style="font-size: 0.9rem; color: #aaa; margin-top: 8px;">适合直接分享</p>
+                        </div>
+                        <div class="format-option" data-format="raw">
+                            <div class="format-title">RAW</div>
+                            <p>保留全部数据</p>
+                            <p style="font-size: 0.9rem; color: #aaa; margin-top: 8px;">适合后期处理</p>
+                        </div>
+                        <div class="format-option" data-format="both">
+                            <div class="format-title">RAW+JPEG</div>
+                            <p>两者兼得</p>
+                            <p style="font-size: 0.9rem; color: #aaa; margin-top: 8px;">灵活但占用空间</p>
+                        </div>
+                    </div>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">提示：专业拍摄建议使用RAW格式以保留最大后期处理空间。</p>
+                </div>
+                
+                <div class="control-section">
+                    <h4 class="section-title"><i class="fas fa-lightbulb"></i> 测光模式设置</h4>
+                    <div class="metering-options">
+                        <div class="metering-option selected" data-metering="evaluative">
+                            <div class="metering-icon"><i class="fas fa-th"></i></div>
+                            <div class="metering-title">评价测光</div>
+                            <p style="font-size: 0.9rem; color: #ccc;">对整个画面进行分析，适合大多数场景</p>
+                        </div>
+                        <div class="metering-option" data-metering="center">
+                            <div class="metering-icon"><i class="fas fa-bullseye"></i></div>
+                            <div class="metering-title">中央重点测光</div>
+                            <p style="font-size: 0.9rem; color: #ccc;">偏重画面中央区域，适合主体在中央的场景</p>
+                        </div>
+                        <div class="metering-option" data-metering="spot">
+                            <div class="metering-icon"><i class="fas fa-dot-circle"></i></div>
+                            <div class="metering-title">点测光</div>
+                            <p style="font-size: 0.9rem; color: #ccc;">仅对画面极小区域测光，适合高对比度场景</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h4 class="section-title"><i class="fas fa-search"></i> 图像回放与检查</h4>
+                    <div class="review-controls">
+                        <button class="review-btn" id="check-histogram">
+                            <i class="fas fa-chart-bar"></i> 查看直方图
+                        </button>
+                        <button class="review-btn" id="check-focus">
+                            <i class="fas fa-search-plus"></i> 检查焦点
+                        </button>
+                        <button class="review-btn" id="check-exposure">
+                            <i class="fas fa-sun"></i> 检查曝光
+                        </button>
+                    </div>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-top: 15px;">提示：拍摄后立即检查直方图和图像细节，确保曝光准确、焦点清晰。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feedback-panel">
+            <h3 class="feedback-title"><i class="fas fa-comment-dots"></i> 学习反馈与指导</h3>
+            <div class="feedback-content" id="feedback-content">
+                欢迎使用相机基础设置交互学习系统！请从左侧选择要学习的模块，然后在右侧控制面板进行设置操作。系统会实时反馈您的操作效果并提供专业指导。
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-text">学习进度: <span id="progress-percent">0</span>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div style="color: #aaa; min-width: 150px;">已掌握: <span id="completed-modules">0</span>/4 个模块</div>
+            </div>
+            
+            <button class="reset-btn" id="reset-btn">
+                <i class="fas fa-redo"></i> 重置所有设置
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 相机状态变量
+        let cameraState = {
+            whiteBalance: 'auto',
+            fileFormat: 'jpeg',
+            meteringMode: 'evaluative',
+            exposureCompensation: 0.0,
+            completedModules: [false, false, false, false],
+            histogramData: generateHistogramData(),
+            focusPoint: { x: 70, y: 60 }
+        };
+        
+        // 初始化函数
+        function init() {
+            // 白平衡选项事件
+            document.querySelectorAll('.wb-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    setWhiteBalance(this.dataset.wb);
+                });
+            });
+            
+            // 文件格式选项事件
+            document.querySelectorAll('.format-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    setFileFormat(this.dataset.format);
+                });
+            });
+            
+            // 测光模式选项事件
+            document.querySelectorAll('.metering-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    setMeteringMode(this.dataset.metering);
+                });
+            });
+            
+            // 回放检查按钮事件
+            document.getElementById('check-histogram').addEventListener('click', checkHistogram);
+            document.getElementById('check-focus').addEventListener('click', checkFocus);
+            document.getElementById('check-exposure').addEventListener('click', checkExposure);
+            
+            // 重置按钮事件
+            document.getElementById('reset-btn').addEventListener('click', resetAll);
+            
+            // 模块点击事件
+            document.querySelectorAll('.module-card').forEach((card, index) => {
+                card.addEventListener('click', () => {
+                    activateModule(index);
+                });
+            });
+            
+            // 初始绘制直方图
+            updateHistogram();
+            
+            // 初始更新显示
+            updateDisplay();
+            updateProgress();
+            
+            // 初始反馈
+            showFeedback("欢迎使用相机基础设置交互学习系统！请从左侧选择要学习的模块，然后在右侧控制面板进行设置操作。");
+        }
+        
+        // 生成直方图数据
+        function generateHistogramData() {
+            let data = [];
+            // 生成一个典型的曝光良好的直方图数据
+            for (let i = 0; i < 20; i++) {
+                // 创建一个中间高，两边低的分布
+                let value = Math.sin(i * Math.PI / 19) * 80 + 20;
+                // 添加一些随机变化
+                value += Math.random() * 15 - 7.5;
+                data.push(Math.max(10, Math.min(100, value)));
+            }
+            return data;
+        }
+        
+        // 设置白平衡
+        function setWhiteBalance(wb) {
+            cameraState.whiteBalance = wb;
+            
+            // 更新UI选中状态
+            document.querySelectorAll('.wb-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`.wb-option[data-wb="${wb}"]`).classList.add('selected');
+            
+            // 检查模块1是否完成
+            if (!cameraState.completedModules[0]) {
+                cameraState.completedModules[0] = true;
+                updateModuleStatus(0, true);
+                updateProgress();
+                showFeedback("很好！您已成功设置白平衡。不同光源有不同的色温，正确设置白平衡可以确保照片颜色真实自然。");
+            }
+            
+            updateDisplay();
+        }
+        
+        // 设置文件格式
+        function setFileFormat(format) {
+            cameraState.fileFormat = format;
+            
+            // 更新UI选中状态
+            document.querySelectorAll('.format-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`.format-option[data-format="${format}"]`).classList.add('selected');
+            
+            // 检查模块2是否完成
+            if (!cameraState.completedModules[1]) {
+                cameraState.completedModules[1] = true;
+                updateModuleStatus(1, true);
+                updateProgress();
+                
+                let formatName = format === 'jpeg' ? 'JPEG' : (format === 'raw' ? 'RAW' : 'RAW+JPEG');
+                showFeedback(`很好！您已选择${formatName}文件格式。${getFormatAdvice(format)}`);
+            }
+            
+            updateDisplay();
+        }
+        
+        // 获取文件格式建议
+        function getFormatAdvice(format) {
+            switch(format) {
+                case 'jpeg':
+                    return "JPEG格式文件小，兼容性好，适合直接分享和使用。";
+                case 'raw':
+                    return "RAW格式保留了全部图像数据，后期处理空间大，适合专业摄影。";
+                case 'both':
+                    return "RAW+JPEG组合既保留了后期处理空间，又有可直接使用的JPEG文件，但会占用更多存储空间。";
+                default:
+                    return "";
+            }
+        }
+        
+        // 设置测光模式
+        function setMeteringMode(metering) {
+            cameraState.meteringMode = metering;
+            
+            // 更新UI选中状态
+            document.querySelectorAll('.metering-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`.metering-option[data-metering="${metering}"]`).classList.add('selected');
+            
+            // 检查模块4是否完成
+            if (!cameraState.completedModules[3]) {
+                cameraState.completedModules[3] = true;
+                updateModuleStatus(3, true);
+                updateProgress();
+                
+                let meteringName = metering === 'evaluative' ? '评价测光' : 
+                                  (metering === 'center' ? '中央重点测光' : '点测光');
+                showFeedback(`很好！您已选择${meteringName}。${getMeteringAdvice(metering)}`);
+            }
+            
+            updateDisplay();
+        }
+        
+        // 获取测光模式建议
+        function getMeteringAdvice(metering) {
+            switch(metering) {
+                case 'evaluative':
+                    return "评价测光对整个画面进行分析，适合大多数常规拍摄场景。";
+                case 'center':
+                    return "中央重点测光偏重画面中央区域，适合主体位于画面中央的拍摄场景。";
+                case 'spot':
+                    return "点测光仅对画面极小区域测光，适合高对比度或逆光等复杂光线场景。";
+                default:
+                    return "";
+            }
+        }
+        
+        // 检查直方图
+        function checkHistogram() {
+            // 检查模块3是否完成
+            if (!cameraState.completedModules[2]) {
+                cameraState.completedModules[2] = true;
+                updateModuleStatus(2, true);
+                updateProgress();
+            }
+            
+            // 生成新的直方图数据（模拟不同曝光情况）
+            cameraState.histogramData = generateHistogramData();
+            updateHistogram();
+            
+            // 分析直方图
+            let histogramAnalysis = analyzeHistogram(cameraState.histogramData);
+            
+            showFeedback(`直方图显示亮度分布：${histogramAnalysis.description}。${histogramAnalysis.advice}`);
+            updateDisplay();
+        }
+        
+        // 检查焦点
+        function checkFocus() {
+            // 检查模块3是否完成
+            if (!cameraState.completedModules[2]) {
+                cameraState.completedModules[2] = true;
+                updateModuleStatus(2, true);
+                updateProgress();
+            }
+            
+            // 显示对焦点
+            const indicator = document.getElementById('focus-indicator');
+            indicator.style.display = 'block';
+            indicator.style.left = cameraState.focusPoint.x + '%';
+            indicator.style.top = cameraState.focusPoint.y + '%';
+            
+            // 显示预览图像
+            const previewImage = document.getElementById('preview-image');
+            const previewPlaceholder = document.getElementById('preview-placeholder');
+            
+            // 使用占位图像或实际图像
+            previewPlaceholder.style.display = 'none';
+            previewImage.style.display = 'block';
+            
+            // 随机选择一个示例图像
+            const imageNumber = Math.floor(Math.random() * 3) + 1;
+            previewImage.src = `https://images.unsplash.com/photo-15${7000 + imageNumber}?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80`;
+            previewImage.alt = "示例图像";
+            
+            // 随机改变对焦点位置
+            cameraState.focusPoint = {
+                x: 30 + Math.random() * 40,
+                y: 30 + Math.random() * 40
+            };
+            
+            // 随机设置焦点状态
+            const isInFocus = Math.random() > 0.3; // 70%的几率合焦
+            document.getElementById('focus-status').textContent = isInFocus ? '合焦' : '脱焦';
+            
+            showFeedback("正在检查焦点... " + (isInFocus ? 
+                "焦点清晰！对焦点已准确落在主体上。" : 
+                "焦点可能不准确，建议重新对焦或使用更小的光圈以增加景深。"));
+        }
+        
+        // 检查曝光
+        function checkExposure() {
+            // 检查模块3是否完成
+            if (!cameraState.completedModules[2]) {
+                cameraState.completedModules[2] = true;
+                updateModuleStatus(2, true);
+                updateProgress();
+            }
+            
+            // 随机生成曝光评估
+            const exposureConditions = [
+                { status: '正常', description: '曝光准确，亮部和暗部细节都得到了很好的保留。', ev: 0.0 },
+                { status: '稍亮', description: '曝光略微偏亮，部分高光细节可能丢失。', ev: 0.7 },
+                { status: '稍暗', description: '曝光略微偏暗，阴影部分细节不足。', ev: -0.7 },
+                { status: '过曝', description: '曝光过度，高光部分严重丢失细节。', ev: 1.5 },
+                { status: '欠曝', description: '曝光不足，画面整体太暗，阴影细节丢失。', ev: -1.5 }
+            ];
+            
+            const condition = exposureConditions[Math.floor(Math.random() * exposureConditions.length)];
+            
+            cameraState.exposureCompensation = condition.ev;
+            document.getElementById('exposure-status').textContent = condition.status;
+            document.getElementById('ev-display').textContent = condition.ev.toFixed(1);
+            
+            // 根据曝光状态调整直方图
+            adjustHistogramForExposure(condition.status);
+            
+            showFeedback(`曝光检查：${condition.description} 建议：${getExposureAdvice(condition.status)}`);
+            updateDisplay();
+        }
+        
+        // 根据曝光状态调整直方图
+        function adjustHistogramForExposure(exposureStatus) {
+            let newData = [];
+            
+            switch(exposureStatus) {
+                case '正常':
+                    // 正常曝光，直方图居中
+                    for (let i = 0; i < 20; i++) {
+                        let value = Math.sin(i * Math.PI / 19) * 80 + 20;
+                        value += Math.random() * 15 - 7.5;
+                        newData.push(Math.max(10, Math.min(100, value)));
+                    }
+                    break;
+                case '稍亮':
+                case '过曝':
+                    // 偏亮曝光，直方图右偏
+                    for (let i = 0; i < 20; i++) {
+                        let value = Math.sin((i + 5) * Math.PI / 19) * 70 + 30;
+                        value += Math.random() * 15 - 7.5;
+                        newData.push(Math.max(10, Math.min(100, value)));
+                    }
+                    break;
+                case '稍暗':
+                case '欠曝':
+                    // 偏暗曝光，直方图左偏
+                    for (let i = 0; i < 20; i++) {
+                        let value = Math.sin((i - 5) * Math.PI / 19) * 70 + 30;
+                        value += Math.random() * 15 - 7.5;
+                        newData.push(Math.max(10, Math.min(100, value)));
+                    }
+                    break;
+            }
+            
+            cameraState.histogramData = newData;
+            updateHistogram();
+        }
+        
+        // 获取曝光建议
+        function getExposureAdvice(exposureStatus) {
+            switch(exposureStatus) {
+                case '正常':
+                    return "曝光准确，保持当前设置即可。";
+                case '稍亮':
+                    return "可适当减少曝光补偿或使用更快的快门速度/更小的光圈。";
+                case '稍暗':
+                    return "可适当增加曝光补偿或使用更慢的快门速度/更大的光圈。";
+                case '过曝':
+                    return "需要显著减少曝光，检查直方图避免高光溢出。";
+                case '欠曝':
+                    return "需要显著增加曝光，检查直方图避免阴影死黑。";
+                default:
+                    return "";
+            }
+        }
+        
+        // 分析直方图
+        function analyzeHistogram(data) {
+            // 计算直方图平均值
+            let sum = data.reduce((a, b) => a + b, 0);
+            let avg = sum / data.length;
+            
+            // 判断直方图类型
+            if (avg < 30) {
+                return {
+                    description: "直方图整体偏左，图像可能曝光不足。",
+                    advice: "建议增加曝光量，使直方图向右移动。"
+                };
+            } else if (avg > 70) {
+                return {
+                    description: "直方图整体偏右，图像可能曝光过度。",
+                    advice: "建议减少曝光量，使直方图向左移动。"
+                };
+            } else {
+                return {
+                    description: "直方图分布均匀，图像曝光可能正常。",
+                    advice: "曝光良好，保持当前设置。注意避免直方图左右两端被切断。"
+                };
+            }
+        }
+        
+        // 更新直方图显示
+        function updateHistogram() {
+            const histogram = document.getElementById('histogram');
+            histogram.innerHTML = '';
+            
+            cameraState.histogramData.forEach(value => {
+                const bar = document.createElement('div');
+                bar.className = 'histogram-bar';
+                bar.style.height = value + '%';
+                histogram.appendChild(bar);
+            });
+        }
+        
+        // 激活学习模块
+        function activateModule(index) {
+            // 更新模块卡片状态
+            document.querySelectorAll('.module-card').forEach((card, i) => {
+                if (i === index) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+            
+            // 显示相应模块的反馈
+            const moduleTitles = [
+                "白平衡设置",
+                "文件格式设置", 
+                "直方图与回放检查",
+                "测光模式设置"
+            ];
+            
+            const moduleDescriptions = [
+                "白平衡是确保照片颜色准确的关键设置。不同的光源有不同的色温，白平衡功能可以校正这些颜色偏差。",
+                "选择合适的文件格式对后期处理和图像质量有重要影响。RAW格式保留全部数据，JPEG格式文件更小。",
+                "拍摄后立即检查直方图和图像细节，确保曝光准确、焦点清晰。这是专业摄影的重要习惯。",
+                "测光模式决定相机如何测量场景亮度，从而计算出正确的曝光参数。"
+            ];
+            
+            showFeedback(`当前学习模块：${moduleTitles[index]}。${moduleDescriptions[index]}`);
+        }
+        
+        // 更新模块完成状态
+        function updateModuleStatus(moduleIndex, completed) {
+            const moduleCard = document.getElementById(`module${moduleIndex + 1}`);
+            
+            if (completed) {
+                moduleCard.classList.add('completed');
+                // 添加完成标记
+                if (!moduleCard.querySelector('.completed-badge')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'completed-badge';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> 已掌握';
+                    badge.style.cssText = 'position: absolute; top: 15px; right: 15px; background: rgba(76, 175, 80, 0.2); color: #4CAF50; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;';
+                    moduleCard.style.position = 'relative';
+                    moduleCard.appendChild(badge);
+                }
+            }
+        }
+        
+        // 更新显示屏
+        function updateDisplay() {
+            // 白平衡显示
+            const wbDisplayMap = {
+                'auto': '自动',
+                'sunny': '日光', 
+                'cloudy': '阴天',
+                'shade': '阴影',
+                'tungsten': '钨丝灯',
+                'fluorescent': '荧光灯',
+                'flash': '闪光灯',
+                'custom': '自定义'
+            };
+            document.getElementById('wb-display').textContent = wbDisplayMap[cameraState.whiteBalance] || '自动';
+            
+            // 文件格式显示
+            const formatDisplayMap = {
+                'jpeg': 'JPEG',
+                'raw': 'RAW',
+                'both': 'RAW+JPEG'
+            };
+            document.getElementById('format-display').textContent = formatDisplayMap[cameraState.fileFormat] || 'JPEG';
+            
+            // 图像质量显示（根据格式变化）
+            document.getElementById('quality-display').textContent = 
+                cameraState.fileFormat === 'raw' ? '高' : 
+                cameraState.fileFormat === 'both' ? '高+标准' : '标准';
+            
+            // 测光模式显示
+            const meteringDisplayMap = {
+                'evaluative': '评价测光',
+                'center': '中央重点测光',
+                'spot': '点测光'
+            };
+            document.getElementById('metering-display').textContent = meteringDisplayMap[cameraState.meteringMode] || '评价测光';
+            
+            // 剩余张数（根据格式变化）
+            const shotsMap = {
+                'jpeg': 850,
+                'raw': 245,
+                'both': 210
+            };
+            document.getElementById('shots-remaining').textContent = shotsMap[cameraState.fileFormat] || 245;
+        }
+        
+        // 更新学习进度
+        function updateProgress() {
+            const completedCount = cameraState.completedModules.filter(Boolean).length;
+            const progressPercent = (completedCount / 4) * 100;
+            
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            document.getElementById('progress-percent').textContent = progressPercent;
+            document.getElementById('completed-modules').textContent = completedCount;
+            
+            // 如果所有模块完成，显示祝贺信息
+            if (completedCount === 4) {
+                showFeedback("恭喜！您已成功掌握所有相机基础设置。您现在应该能够正确设置白平衡、选择合适的文件格式、使用直方图检查曝光，并根据拍摄场景选择恰当的测光模式。");
+            }
+        }
+        
+        // 显示反馈信息
+        function showFeedback(message) {
+            document.getElementById('feedback-content').textContent = message;
+        }
+        
+        // 重置所有设置
+        function resetAll() {
+            cameraState = {
+                whiteBalance: 'auto',
+                fileFormat: 'jpeg',
+                meteringMode: 'evaluative',
+                exposureCompensation: 0.0,
+                completedModules: [false, false, false, false],
+                histogramData: generateHistogramData(),
+                focusPoint: { x: 70, y: 60 }
+            };
+            
+            // 重置UI选中状态
+            document.querySelectorAll('.wb-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('.wb-option[data-wb="auto"]').classList.add('selected');
+            
+            document.querySelectorAll('.format-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('.format-option[data-format="jpeg"]').classList.add('selected');
+            
+            document.querySelectorAll('.metering-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector('.metering-option[data-metering="evaluative"]').classList.add('selected');
+            
+            // 重置显示
+            document.getElementById('exposure-status').textContent = '正常';
+            document.getElementById('ev-display').textContent = '0.0';
+            document.getElementById('focus-status').textContent = '合焦';
+            
+            // 隐藏对焦点和预览图像
+            document.getElementById('focus-indicator').style.display = 'none';
+            document.getElementById('preview-image').style.display = 'none';
+            document.getElementById('preview-placeholder').style.display = 'block';
+            
+            // 移除完成标记
+            document.querySelectorAll('.completed-badge').forEach(badge => badge.remove());
+            document.querySelectorAll('.module-card').forEach(card => {
+                card.classList.remove('completed');
+            });
+            
+            // 激活第一个模块
+            document.querySelectorAll('.module-card').forEach((card, index) => {
+                if (index === 0) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+            
+            // 更新显示
+            updateHistogram();
+            updateDisplay();
+            updateProgress();
+            showFeedback("所有设置已重置。请从左侧选择学习模块开始交互学习。");
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
